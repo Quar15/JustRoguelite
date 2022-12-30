@@ -113,7 +113,7 @@ namespace JustRoguelite
             // _uiManager.battleUIManager.EndTurn(_currentCharacter, _playerCharacters, _enemyCharacters);
             _canExecuteTurn = true;
 
-            if (_currentCharacter != null && !_currentCharacter.GetIsPlayer())
+            if (_currentCharacter != null && _currentCharacter.GetCharacterType() == CharacterType.ENEMY)
                 _currentCharacter.ExecuteTurn();
         }
 

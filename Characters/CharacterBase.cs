@@ -9,18 +9,20 @@ using JustRoguelite.Skills;
 
 namespace JustRoguelite.Characters
 {
+    public enum CharacterType { BASE, PLAYER, ENEMY, NEUTRAL };
+
     internal class CharacterBase : IIdentifiable
     {
-        private static int _nextID;
-        private int _ID;
-        public int GetID() { return _ID; }
-        public void SetID(int ID) { _ID = ID; }
+        private static uint _nextID;
+        private uint _ID;
+        public uint GetID() { return _ID; }
+        public void SetID(uint ID) { _ID = ID; }
 
         private string _name;
         private CharacterStats _characterBaseStats;
         private CharacterStats _characterStats;
         private int _battleID;
-        private bool _isPlayer;
+        private CharacterType _characterType;
         private int _HP;
         private int _EXP;
 
@@ -28,18 +30,18 @@ namespace JustRoguelite.Characters
 
         public System.Func<CharacterBase, CharacterBase, Skill, bool> turnExecuted;
 
-        public CharacterBase(string name, CharacterStats characterBaseStats, bool isPlayer = false) 
+        public CharacterBase(string name, CharacterStats characterBaseStats) 
         {
             _nextID++;
             _ID = _nextID;
 
             _name = name;
             _characterBaseStats = characterBaseStats;
-            _isPlayer = isPlayer;
+            _characterType = CharacterType.BASE;
 
             _characterStats = new();
             _characterStats.maxHP = _characterBaseStats.maxHP;
-            _HP = _characterBaseStats.maxHP;
+            _HP = (int)_characterBaseStats.maxHP;
             _characterStats.speed = _characterBaseStats.speed;
             _characterStats.physicalResistance = _characterBaseStats.physicalResistance;
             _characterStats.magicalResistance = _characterBaseStats.magicalResistance;
@@ -53,16 +55,16 @@ namespace JustRoguelite.Characters
         public string GetName() { return _name; }
         public int GetBattleID() { return _battleID; }
         public void SetBattleID(int ID) { _battleID = ID; }
-        public bool GetIsPlayer() { return _isPlayer; }
+        public CharacterType GetCharacterType() { return _characterType; }
         public int GetHP() { return _HP; }
         public float GetHPPercentage() { return (GetHP() / GetMaxHP()); }
         public bool IsAlive() { return GetHP() > 0; }
-        public int GetMaxHP() { return _characterStats.maxHP; }
+        public int GetMaxHP() { return (int)_characterStats.maxHP; }
         public int GetSpeed() { return _characterStats.speed; }
 
         public void DebugLog(string? localization = null)
         {
-            Logger.Instance().Info($"CharacterBase(\n\t\tID = {_ID}, BattleID = {GetBattleID()}, Name = '{GetName()}', IsPlayer = {GetIsPlayer()}, \n\t\tHP = {GetHP()}, MaxHP = {GetMaxHP()}, EXP = {_EXP}\n\t)", localization == null ? "CharacterBase.DebugLog()" : $"CharacterBase.DebugLog() -> {localization}");
+            Logger.Instance().Info($"CharacterBase(\n\t\tID = {_ID}, BattleID = {GetBattleID()}, Name = '{GetName()}', CharacterType = {GetCharacterType()}, \n\t\tHP = {GetHP()}, MaxHP = {GetMaxHP()}, EXP = {_EXP}\n\t)", localization == null ? "CharacterBase.DebugLog()" : $"CharacterBase.DebugLog() -> {localization}");
         }
 
         public void DealDMGToSelf(int dmgValue, DamageType dmgType)
@@ -71,10 +73,10 @@ namespace JustRoguelite.Characters
             switch (dmgType)
             {
                 case DamageType.PHYSICAL:
-                    calcDmgValue = (int)System.Math.Ceiling(Math.Max(0, dmgValue * (10f / (10 + _characterStats.physicalResistance))));
+                    calcDmgValue = (int)Math.Ceiling(Math.Max(0, dmgValue * (10f / (10 + _characterStats.physicalResistance))));
                     break;
                 case DamageType.MAGIC:
-                    calcDmgValue = (int)System.Math.Ceiling(Math.Max(0, dmgValue * (10f / (10 + _characterStats.magicalResistance))));
+                    calcDmgValue = (int)Math.Ceiling(Math.Max(0, dmgValue * (10f / (10 + _characterStats.magicalResistance))));
                     break;
             }
 

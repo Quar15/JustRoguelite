@@ -8,10 +8,10 @@ namespace JustRoguelite.Items
 
     internal class Item : IIdentifiable
     {
-        private static int _nextID;
-        private int _ID;
-        public int GetID() { return _ID; }
-        public void SetID(int ID) { _ID = ID; }
+        private static uint _nextID;
+        private uint _ID;
+        public uint GetID() { return _ID; }
+        public void SetID(uint ID) { _ID = ID; }
 
         public string name;
         public string description;

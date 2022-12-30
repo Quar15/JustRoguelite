@@ -27,9 +27,9 @@ namespace JustRoguelite.Utility
             inventory = new();
             inventory.Add(i1);
             // Characters
-            CharacterBase player = new("Player01", new CharacterStats(maxHP: 20), true);
-            CharacterBase p2 = new("Player02", new CharacterStats(), true);
-            CharacterBase p3 = new("Player03", new CharacterStats(), true);
+            CharacterBase player = new("Player01", new CharacterStats(maxHP: 20));
+            CharacterBase p2 = new("Player02", new CharacterStats());
+            CharacterBase p3 = new("Player03", new CharacterStats());
             CharacterBase e1 = new("Enemy01", new CharacterStats(maxHP: 5));
 
             characters = new CharactersList();

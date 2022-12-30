@@ -8,13 +8,13 @@ namespace JustRoguelite.Characters
 {
     internal class CharacterStats
     {
-        public int maxHP;
-        public int speed;
+        public uint maxHP;
+        public sbyte speed;
 
-        public int physicalResistance;
-        public int magicalResistance;
+        public sbyte physicalResistance;
+        public sbyte magicalResistance;
 
-        public CharacterStats(int maxHP = 10, int speed = 1, int physicalResistance = 0, int magicalResistance = 0) 
+        public CharacterStats(uint maxHP = 10, sbyte speed = 1, sbyte physicalResistance = 0, sbyte magicalResistance = 0) 
         {
             this.maxHP = maxHP;
             this.speed = speed;
