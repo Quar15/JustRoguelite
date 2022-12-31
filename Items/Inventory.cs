@@ -45,7 +45,7 @@ namespace JustRoguelite.Items
             List<Item> itemsOfType = new();
             foreach (Item item in _itemList)
             {
-                if (item.ItemUsageType == itemType)
+                if (item.GetItemType() == itemType)
                     itemsOfType.Add(item);
             }
 

@@ -44,7 +44,7 @@ namespace JustRoguelite.Utility
         {
             CharacterBase character;
 
-            character = new("Test", new());
+            character = new("Test", "Character Description", new());
 
             return character;
         }
@@ -68,7 +68,6 @@ namespace JustRoguelite.Utility
             string? description = Console.ReadLine();
 
             item = new(name == null ? "Item" : name, description == null ? "" : description);
-            
 
             return item;
         }
@@ -97,21 +96,8 @@ namespace JustRoguelite.Utility
                     Logger.Instance().Info("Find Skill", "DevTools.Find(...)");
                     if (skills == null) break;
 
-                    SkillList? skillList = null;
-                    Skill? skill = null;
+                    HandleFind(skills, id, arg);
 
-                    foreach (SkillList sl in skills) 
-                    {
-                        skill = sl.GetItem(id);
-                        if (skill != null) 
-                        {
-                            skillList = sl;
-                            break;
-                        }
-                    }
-
-                    if (skillList == null || skill == null) break;
-                    HandleFind(skillList, skill, arg);
                     break;
 
                 case "i": // [I]tem
@@ -133,9 +119,44 @@ namespace JustRoguelite.Utility
             }
         }
 
+        private static void HandleFindInput(out string? cmd) 
+        {
+            string? user_input = null;
+            while(user_input == null) 
+            {
+                Console.WriteLine("{ [P]rint | [E]dit | [D]elete }");
+                WriteUserCmdPrompt();
+                user_input = Console.ReadLine();
+            }
+
+            cmd = user_input;
+        }
+
+        public static void HandleFind(List<SkillList> skills, int id, string? arg = null) 
+        {
+            SkillList? skillList = null;
+            Skill? skill = null;
+
+            foreach (SkillList sl in skills)
+            {
+                skill = sl.GetItem(id);
+                if (skill != null)
+                {
+                    skillList = sl;
+                    break;
+                }
+            }
+
+            if (skillList == null || skill == null) return;
+            HandleFind(skillList, skill, arg);
+        }
+
         public static void HandleFind(SkillList skillList, Skill skill, string? arg = null) 
         {
             Logger.Instance().Info("Handle Find Skill", "DevTools.HandleFind(...)");
+
+            if(arg == null)
+                HandleFindInput(out arg);
 
             switch (arg) 
             {
@@ -150,9 +171,11 @@ namespace JustRoguelite.Utility
 
                 case "d": // [D]elete
                     Logger.Instance().Info("Delete Skill", "DevTools.HandleFind(...)");
+                    skillList.Remove(skill);
                     break;
 
                 default:
+                    Console.WriteLine("Wrong option - available options { [P]rint | [E]dit | [D]elete }");
                     break;
             }
         }
@@ -160,6 +183,9 @@ namespace JustRoguelite.Utility
         public static void HandleFind(CharactersList characters, CharacterBase character, string? arg = null)
         {
             Logger.Instance().Info("Handle Find Character", "DevTools.HandleFind(...)");
+
+            if (arg == null)
+                HandleFindInput(out arg);
 
             switch (arg)
             {
@@ -174,9 +200,11 @@ namespace JustRoguelite.Utility
 
                 case "d": // [D]elete
                     Logger.Instance().Info("Delete Character", "DevTools.HandleFind(...)");
+                    characters.Remove(character);
                     break;
 
                 default:
+                    Console.WriteLine("Wrong option - available options { [P]rint | [E]dit | [D]elete }");
                     break;
             }
         }
@@ -185,12 +213,8 @@ namespace JustRoguelite.Utility
         {
             Logger.Instance().Info("Handle Find Item", "DevTools.HandleFind(...)");
 
-            while(arg == null) 
-            {
-                Console.WriteLine("{ [P]rint | [E]dit | [D]elete }");
-                WriteUserCmdPrompt();
-                arg = Console.ReadLine();
-            }
+            if (arg == null)
+                HandleFindInput(out arg);
 
             switch (arg)
             {
@@ -205,10 +229,11 @@ namespace JustRoguelite.Utility
 
                 case "d": // [D]elete
                     Logger.Instance().Info("Delete Item", "DevTools.HandleFind(...)");
-
+                    inventory.Remove(item);
                     break;
 
                 default:
+                    Console.WriteLine("Wrong option - available options { [P]rint | [E]dit | [D]elete }");
                     break;
             }
         }
@@ -253,6 +278,7 @@ namespace JustRoguelite.Utility
                         break;
 
                     default:
+                        Console.WriteLine("Wrong option - available options {  }");
                         break;
                 }
             }
@@ -287,7 +313,7 @@ namespace JustRoguelite.Utility
 
         public static void PrettyPrint(Inventory inventory)
         {
-            Items.Item[] items = inventory.GetAll();
+            Item[] items = inventory.GetAll();
             foreach (Item item in items)
                 PrettyPrint(item);
         }

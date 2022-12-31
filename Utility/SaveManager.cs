@@ -27,15 +27,15 @@ namespace JustRoguelite.Utility
             inventory = new();
             inventory.Add(i1);
             // Characters
-            CharacterBase player = new("Player01", new CharacterStats(maxHP: 20));
-            CharacterBase p2 = new("Player02", new CharacterStats());
-            CharacterBase p3 = new("Player03", new CharacterStats());
-            CharacterBase e1 = new("Enemy01", new CharacterStats(maxHP: 5));
+            CharacterPlayer player = new("Player01", "", new CharacterStats(maxHP: 20));
+            CharacterPlayer p2 = new("Player02", "", new CharacterStats());
+            CharacterNeutral shopkeeper = new("Shopkeeper", "", new CharacterStats());
+            CharacterEnemy e1 = new("Enemy01", "", new CharacterStats(maxHP: 5));
 
             characters = new CharactersList();
             characters.Add(player);
             characters.Add(p2);
-            characters.Add(p3);
+            characters.Add(shopkeeper);
             characters.Add(e1);
         }
 
