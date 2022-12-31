@@ -15,17 +15,30 @@ namespace JustRoguelite.Items
 
         public string name;
         public string description;
+        public int value;
 
         private ItemType _itemType = ItemType.USABLE;
-        public ItemType ItemUsageType { get { return _itemType; } }
+        public ItemType GetItemType() { return _itemType; }
+        public void SetItemType(ItemType type) { _itemType = type; }
 
-        public Item(string name = "Item", string description = "") 
+        public Item(string name = "Item", string description = "", int value = 0) 
         {
             _nextID++;
             _ID = _nextID;
 
             this.name = name;
             this.description = description;
+            this.value = value;
+        }
+
+        public Item(ItemData itemData) 
+        {
+            _ID = itemData.id;
+            _nextID = itemData.id + 1;
+            this.name = itemData.name;
+            this.description = itemData.description;
+            this.value = itemData.value;
+            this._itemType = itemData.itemType;
         }
 
         public void DebugLog(string? localization = null) 

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using JustRoguelite.Utility;
 
@@ -35,6 +31,14 @@ namespace JustRoguelite.Skills
                 this.values = new();
             else
                 this.values = values;
+        }
+
+        public Skill(SkillData skillData) 
+        {
+            this.name = skillData.name;
+            this.description = skillData.description;
+            this.values = skillData.values;
+            this.damageType = skillData.damageType;
         }
 
         public void DebugLog(string? localization = null)

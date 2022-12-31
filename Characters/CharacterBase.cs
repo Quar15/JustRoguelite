@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using JustRoguelite.Utility;
 using JustRoguelite.Skills;
@@ -19,6 +15,7 @@ namespace JustRoguelite.Characters
         public void SetID(uint ID) { _ID = ID; }
 
         private string _name;
+        private string _description;
         private CharacterStats _characterBaseStats;
         private CharacterStats _characterStats;
         private int _battleID;
@@ -28,14 +25,15 @@ namespace JustRoguelite.Characters
 
         public List<SkillList> skillLists = new();
 
-        public System.Func<CharacterBase, CharacterBase, Skill, bool> turnExecuted;
+        public Func<CharacterBase, CharacterBase, Skill, bool> turnExecuted;
 
-        public CharacterBase(string name, CharacterStats characterBaseStats) 
+        public CharacterBase(string name, string description, CharacterStats characterBaseStats) 
         {
             _nextID++;
             _ID = _nextID;
 
             _name = name;
+            _description = description;
             _characterBaseStats = characterBaseStats;
             _characterType = CharacterType.BASE;
 
@@ -49,13 +47,43 @@ namespace JustRoguelite.Characters
 
             turnExecuted += TurnExecutedLog;
 
-            Logger.Instance().Info($"Initialized character [HP: {GetHP()}/{GetMaxHP()}]", "CharacterBase.CharacterBase()");
+            Logger.Instance().Info($"Initialized character [HP: {GetHP()}/{GetMaxHP()}]", "CharacterBase.CharacterBase(...)");
+        }
+
+        public CharacterBase(CharacterData characterData) 
+        {
+            _ID = characterData.ID;
+            _nextID = characterData.ID + 1;
+
+            _name = characterData.name;
+            _description = characterData.description;
+
+            _characterBaseStats = characterData.characterBaseStats;
+            _characterStats = characterData.characterStats;
+
+            _characterType = characterData.characterType;
+
+            foreach(uint skillID in characterData.skillIDs) 
+            {
+                // @TODO: use factory to create skill
+            }
+
+            foreach(uint itemID in characterData.itemIDs) 
+            {
+                // @TODO: use factory to create item
+            }
+
+            turnExecuted += TurnExecutedLog;
+
+            Logger.Instance().Info($"Initialized character [HP: {GetHP()}/{GetMaxHP()}]", "CharacterBase.CharacterBase(CharacterData)");
         }
 
         public string GetName() { return _name; }
+        public string GetDescription() { return _description; }
         public int GetBattleID() { return _battleID; }
         public void SetBattleID(int ID) { _battleID = ID; }
         public CharacterType GetCharacterType() { return _characterType; }
+        public void SetCharacterType(CharacterType characterType) { _characterType = characterType; }
         public int GetHP() { return _HP; }
         public float GetHPPercentage() { return (GetHP() / GetMaxHP()); }
         public bool IsAlive() { return GetHP() > 0; }
