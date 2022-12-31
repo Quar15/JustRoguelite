@@ -9,12 +9,17 @@ namespace JustRoguelite
 {
     public static class Globals 
     {
-        public const bool DEBUG_LOGS = true;
+        public const LogType LOG_TYPE = LogType.CONSOLE;
     }
 
 
     internal class Program
     {
+        static void HandleMainMenuLoop() 
+        {
+
+        }
+
         static void Main(string[] args)
         {
             Logger.Instance().Info("Program START", "Program.Main()");
@@ -24,7 +29,8 @@ namespace JustRoguelite
             Inventory allItemsInventory;
             SaveManager.LoadData(out charactersList, out fullSkillsLists, out allItemsInventory);
 
-            // Main Menu handling
+            HandleMainMenuLoop();
+
             DevTools.Loop(charactersList, fullSkillsLists, allItemsInventory);
 
 

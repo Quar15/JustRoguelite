@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace JustRoguelite.Utility
 {
+    public enum LogType { NONE, CONSOLE, FILE };
     internal class Logger
     {
         private static Logger _instance;
@@ -21,7 +18,7 @@ namespace JustRoguelite.Utility
 
         private void Log(string msg, string objectName, string msgType, ConsoleColor msgTypeColor)
         {
-            if (!Globals.DEBUG_LOGS) return;
+            if (Globals.LOG_TYPE != LogType.CONSOLE) return;
 
             ConsoleColor beforeFGColor = Console.ForegroundColor;
             Console.ForegroundColor = msgTypeColor;
