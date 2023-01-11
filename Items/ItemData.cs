@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using JustRoguelite.Utility;
 
 namespace JustRoguelite.Items
 {
@@ -21,6 +17,11 @@ namespace JustRoguelite.Items
             this.description = description;
             this.value = value;
             this.itemType = itemType;
+        }
+
+        public void DebugPrint()
+        {
+            Logger.Instance().Info($"ItemData([{id}], {name}, {description}, {value}, {itemType})", "ItemData - DebugPrint()");
         }
     }
 }

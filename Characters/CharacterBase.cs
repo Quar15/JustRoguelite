@@ -52,14 +52,14 @@ namespace JustRoguelite.Characters
 
         public CharacterBase(CharacterData characterData) 
         {
-            _ID = characterData.ID;
-            _nextID = characterData.ID + 1;
+            _ID = characterData.id;
+            _nextID = characterData.id + 1;
 
             _name = characterData.name;
             _description = characterData.description;
 
             _characterBaseStats = characterData.characterBaseStats;
-            _characterStats = characterData.characterStats;
+            _characterStats = characterData.characterBaseStats;
 
             _characterType = characterData.characterType;
 

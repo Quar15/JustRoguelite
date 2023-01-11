@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using JustRoguelite.Utility;
 
 namespace JustRoguelite.Skills
 {
@@ -25,6 +21,11 @@ namespace JustRoguelite.Skills
             this.damageType = damageType;
 
             this.skillType = skillType;
+        }
+
+        public void DebugPrint() 
+        {
+            Logger.Instance().Info($"SkillData([{id}], {name}, {description}, {damageType}, {skillType})", "SkillData - DebugPrint()");
         }
     }
 }
