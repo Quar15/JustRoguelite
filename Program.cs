@@ -7,7 +7,7 @@ using JustRoguelite.Items;
 
 namespace JustRoguelite
 {
-    public static class Globals 
+    public static class Globals
     {
         public const LogType LOG_TYPE = LogType.CONSOLE;
     }
@@ -15,7 +15,7 @@ namespace JustRoguelite
 
     internal class Program
     {
-        static void HandleMainMenuLoop() 
+        static void HandleMainMenuLoop()
         {
 
         }
@@ -27,7 +27,7 @@ namespace JustRoguelite
             CharactersList charactersList;
             List<SkillList> fullSkillsLists;
             Inventory allItemsInventory;
-            SaveManager.LoadData(out charactersList, out fullSkillsLists, out allItemsInventory);
+            SaveManager.LoadAll(out charactersList, out fullSkillsLists, out allItemsInventory);
 
             HandleMainMenuLoop();
 

@@ -15,5 +15,7 @@ namespace JustRoguelite.Characters
             Logger.Instance().Info("Executing NPC Turn", "CharacterNeutral.ExecuteTurn()");
             return true;
         }
+
+        internal CharacterNeutral(Dictionary<string, string> charDict) : base(charDict) { }
     }
 }
