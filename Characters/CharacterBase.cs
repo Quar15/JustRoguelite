@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text.Json;
 
 using JustRoguelite.Utility;
 using JustRoguelite.Skills;
@@ -10,24 +12,24 @@ namespace JustRoguelite.Characters
     internal class CharacterBase : IIdentifiable
     {
         private static uint _nextID;
-        private uint _ID;
+        protected uint _ID;
         public uint GetID() { return _ID; }
         public void SetID(uint ID) { _ID = ID; }
 
-        private string _name;
-        private string _description;
-        private CharacterStats _characterBaseStats;
-        private CharacterStats _characterStats;
-        private int _battleID;
-        private CharacterType _characterType;
-        private int _HP;
-        private int _EXP;
+        protected string _name;
+        protected string _description;
+        protected CharacterStats _characterBaseStats;
+        protected CharacterStats _characterStats;
+        protected int _battleID;
+        protected CharacterType _characterType;
+        protected int _HP;
+        protected int _EXP;
 
         public List<SkillList> skillLists = new();
 
         public Func<CharacterBase, CharacterBase, Skill, bool> turnExecuted;
 
-        public CharacterBase(string name, string description, CharacterStats characterBaseStats) 
+        public CharacterBase(string name, string description, CharacterStats characterBaseStats)
         {
             _nextID++;
             _ID = _nextID;
@@ -50,7 +52,7 @@ namespace JustRoguelite.Characters
             Logger.Instance().Info($"Initialized character [HP: {GetHP()}/{GetMaxHP()}]", "CharacterBase.CharacterBase(...)");
         }
 
-        public CharacterBase(CharacterData characterData) 
+        public CharacterBase(CharacterData characterData)
         {
             _ID = characterData.id;
             _nextID = characterData.id + 1;
@@ -63,12 +65,12 @@ namespace JustRoguelite.Characters
 
             _characterType = characterData.characterType;
 
-            foreach(uint skillID in characterData.skillIDs) 
+            foreach (uint skillID in characterData.skillIDs)
             {
                 // @TODO: use factory to create skill
             }
 
-            foreach(uint itemID in characterData.itemIDs) 
+            foreach (uint itemID in characterData.itemIDs)
             {
                 // @TODO: use factory to create item
             }
@@ -135,11 +137,42 @@ namespace JustRoguelite.Characters
             return true;
         }
 
-        public bool TurnExecutedLog(CharacterBase castingCharacter, CharacterBase targetCharacter, Skill skill) 
+        public bool TurnExecutedLog(CharacterBase castingCharacter, CharacterBase targetCharacter, Skill skill)
         {
             Logger.Instance().Info($"Executed turn - skill casted: {skill.name} ({castingCharacter} -> {targetCharacter})", "CharacterBase.TurnExecutedLog(...)");
 
             return true;
+        }
+
+        internal Dictionary<string, string> ToDict()
+        {
+            Dictionary<string, string> characterData = new();
+            characterData.Add("id", _ID.ToString());
+            characterData.Add("name", _name);
+            characterData.Add("description", _description);
+            characterData.Add("characterBaseStats", JsonSerializer.Serialize(_characterBaseStats));
+            characterData.Add("characterStats", JsonSerializer.Serialize(_characterStats));
+            characterData.Add("battleID", _battleID.ToString());
+            characterData.Add("characterType", _characterType.ToString());
+            characterData.Add("HP", _HP.ToString());
+            characterData.Add("EXP", _EXP.ToString());
+
+            return characterData;
+        }
+
+        internal CharacterBase(Dictionary<string, string> charDict)
+        {
+            _ID = uint.Parse(charDict["id"]);
+            _name = charDict["name"];
+            _description = charDict["description"];
+            _characterBaseStats = JsonSerializer.Deserialize<CharacterStats>(charDict["characterBaseStats"])!;
+            _characterStats = JsonSerializer.Deserialize<CharacterStats>(charDict["characterStats"])!;
+            _battleID = int.Parse(charDict["battleID"]);
+            _characterType = (CharacterType)Enum.Parse(typeof(CharacterType), charDict["characterType"]);
+            _HP = int.Parse(charDict["HP"]);
+            _EXP = int.Parse(charDict["EXP"]);
+
+            turnExecuted += TurnExecutedLog;
         }
     }
 }

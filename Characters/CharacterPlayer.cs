@@ -1,4 +1,6 @@
-﻿using JustRoguelite.Utility;
+﻿using System.Collections.Generic;
+
+using JustRoguelite.Utility;
 
 namespace JustRoguelite.Characters
 {
@@ -14,5 +16,7 @@ namespace JustRoguelite.Characters
             Logger.Instance().Info("Executing Player Turn", "CharacterPlayer.ExecuteTurn()");
             return true;
         }
+
+        internal CharacterPlayer(Dictionary<string, string> charDict) : base(charDict) { }
     }
 }
