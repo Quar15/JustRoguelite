@@ -117,6 +117,7 @@ namespace JustRoguelite.Devtools.Editor
 
                 System.Threading.Thread.Sleep(50);
             }
+            SaveManager.SaveAllData(charData, skillData, itemData);
             screen.Exit();
         }
 
