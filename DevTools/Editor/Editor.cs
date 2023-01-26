@@ -60,7 +60,7 @@ namespace JustRoguelite.Devtools.Editor
                 (new KeyboardInput(ConsoleKey.A, isAlt: true), new HotKeyAction("Add", CreateModeHandler)),
                 (new KeyboardInput(ConsoleKey.E, isAlt: true), new HotKeyAction("Edit", EditModeHandler)),
                 (new KeyboardInput(ConsoleKey.RightArrow), new HotKeyAction("Next", ChangeItemHandler)),
-                (new KeyboardInput(ConsoleKey.LeftArrow), new HotKeyAction("Next", ChangeItemHandler)),
+                (new KeyboardInput(ConsoleKey.LeftArrow), new HotKeyAction("Prev", ChangeItemHandler)),
                 (new KeyboardInput(ConsoleKey.Delete), new HotKeyAction("Delete", DeleteHandler)),
                 (new KeyboardInput(ConsoleKey.S, isAlt: true, isShift: true), new HotKeyAction("Save", SaveHandler)),
                 (new KeyboardInput(ConsoleKey.C, isShift: true), new HotKeyAction("Character", SelectFormHandler(0))),
