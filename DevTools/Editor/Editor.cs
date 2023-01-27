@@ -251,6 +251,7 @@ namespace JustRoguelite.Devtools.Editor
             {
                 return false;
             }
+            SetPrompt("Create mode");
             mode = Mode.Create;
             SelectedForm.ClearFields();
             return true;

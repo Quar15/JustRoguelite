@@ -33,7 +33,7 @@ namespace JustRoguelite
             // HandleMainMenuLoop();
 
             // Devtools 
-            Editor.Setup(125, 30);
+            Editor.Setup(128, 30);
             Editor.Run();
 
             Logger.Instance().Info("Program END", "Program.Main()");

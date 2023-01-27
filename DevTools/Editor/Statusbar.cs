@@ -74,7 +74,7 @@ namespace JustRoguelite.Devtools.Editor
             foreach (var (input, action) in hotkeys)
             {
                 var keymap = $"{action.name}: {input}  ";
-                if (sb.Length + keymap.Length >= screen.Cols)
+                if (sb.Length + keymap.Length - 2 > screen.Cols)
                 {
                     screen.Move(0, screen.Rows - 2);
                     screen.AddString(sb.ToString().PadRight(screen.Cols), cs);
@@ -85,9 +85,9 @@ namespace JustRoguelite.Devtools.Editor
             }
 
             int right = screen.Cols - Editor.Mode.ToString().Length - 2;
-            if (sb.Length < screen.Cols - right)
+            if (sb.Length < right)
             {
-                sb.Append(' ', screen.Cols - sb.Length - right);
+                sb.Append(' ', right - sb.Length);
             }
 
             sb.Append($"[{Editor.Mode}]");
