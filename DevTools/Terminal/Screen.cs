@@ -5,6 +5,10 @@ namespace JustRoguelite.Devtools.Terminal
 {
     // ANSI cheatsheet
     // https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
+
+    // Main class responsible for driving the terminal.
+    //
+    // Contains the screen buffer, and lower level methods for drawing to it.
     public class Screen
     {
         int cols, rows, left, top;
@@ -35,11 +39,16 @@ namespace JustRoguelite.Devtools.Terminal
         public Screen()
         {
             var p = Environment.OSVersion.Platform;
+            // If we're on Windows, initialize the WinVTConsole 
             if (p == PlatformID.Win32NT || p == PlatformID.Win32S || p == PlatformID.Win32Windows)
             {
                 WinConsole = new WinVTConsole();
             }
         }
+
+        // Initialize the screen buffer.
+        //
+        // If the screen is already initialized, does nothing.
         public void Init()
         {
             if (isInitialized)
@@ -49,25 +58,27 @@ namespace JustRoguelite.Devtools.Terminal
 
             // Save cursor position
             Console.Out.Write("\x1b[s");
-
             Console.Out.Flush();
 
-            // Console.TreatControlCAsInput = true;
-
+            // Get original screen size to restore on exit
             colsOrig = Console.WindowWidth;
             rowsOrig = Console.WindowHeight;
 
+            // Set current cursor position to 0,0
             ccol = 0;
             crow = 0;
 
+            // Set current colors to default
             CurrentColors = ColorScheme.Default;
 
+            // If the screen size is 0,0 (no screen resize requested), set it to the original size
             if (cols == 0 || rows == 0)
             {
                 cols = colsOrig;
                 rows = rowsOrig;
             }
 
+            // Resize the screen
             ResizeScreen();
             // Enable alternate screen buffer
             Console.Out.Write("\x1b[?1049h");
@@ -75,6 +86,7 @@ namespace JustRoguelite.Devtools.Terminal
             Console.Out.Write("\x1b[?25l");
             Clear();
 
+            // Set up the screen buffer
             contents = new int[rows, cols, 3];
             dirtyRows = new bool[rows];
             try
@@ -108,12 +120,14 @@ namespace JustRoguelite.Devtools.Terminal
             (cs, CurrentColors) = (CurrentColors, cs);
         }
 
+        // Move the cursor to the specified column and row.
         public void Move(int col, int row)
         {
             ccol = col;
             crow = row;
         }
 
+        // Add character to the screen buffer at current position with specified color scheme.
         public void AddChar(char c, ColorScheme cs)
         {
             if (ccol >= cols || crow >= rows)
@@ -129,11 +143,13 @@ namespace JustRoguelite.Devtools.Terminal
             ccol++;
         }
 
+        // Add character to the screen buffer at current position with global color scheme.
         public void AddChar(char c)
         {
             AddChar(c, CurrentColors);
         }
 
+        // Add string to the screen buffer at current position with specified color scheme.
         public void AddString(string s, ColorScheme cs)
         {
             foreach (var c in s)
@@ -142,6 +158,7 @@ namespace JustRoguelite.Devtools.Terminal
             }
         }
 
+        // Add string to the screen buffer at current position with global color scheme.
         public void AddString(string s)
         {
             foreach (var c in s)
@@ -150,6 +167,7 @@ namespace JustRoguelite.Devtools.Terminal
             }
         }
 
+        // Clear the screen buffer.
         public void Clear()
         {
             if (Rows > 0)
@@ -172,6 +190,7 @@ namespace JustRoguelite.Devtools.Terminal
             }
         }
 
+        // Draw the screen buffer to the underlying terminal.
         public void UpdateScreen()
         {
             if (Console.WindowHeight == 0 || contents.Length != Rows * Cols * 3)
@@ -189,15 +208,20 @@ namespace JustRoguelite.Devtools.Terminal
 
             Console.CursorVisible = false;
 
+            // Step through each row in the screen buffer
             for (int row = top; row < rows; row++)
             {
+                // Skip rows that haven't changed
                 if (!dirtyRows[row])
                 {
                     continue;
                 }
-
+                // Clear the dirty flag
                 dirtyRows[row] = false;
+
+                // Prepare to output the row
                 output.Clear();
+                // Step through each column in current row
                 for (int col = left; col < cols; col++)
                 {
                     if (!SetCursorPosition(col, row))
@@ -208,8 +232,10 @@ namespace JustRoguelite.Devtools.Terminal
                     int outputWidth = 0;
                     for (; col < cols; col++)
                     {
+                        // If the dirty flag is unset, we've reached the end of the continuous dirty region
                         if (contents[row, col, 2] == 0)
                         {
+                            // If we have any output to write, write it
                             if (output.Length > 0)
                             {
                                 SetVirtualCursorPosition(lastCol, row);
@@ -233,15 +259,20 @@ namespace JustRoguelite.Devtools.Terminal
                         {
                             lastCol = col;
                         }
+                        // otherwise, add the character to the output buffer
+                        // first, add the ANSI color escape sequence if the color has changed
+                        // then, add the character
                         int attr = contents[row, col, 1];
                         output.Append(GetANSIColorString(attr != 0 ? attr : CurrentColors));
                         output.Append((char)contents[row, col, 0]);
                         outputWidth++;
 
+                        // Clear the colorscheme & dirty flag
                         contents[row, col, 1] = 0;
                         contents[row, col, 2] = 0;
                     }
                 }
+                // If we have any output to write, write it
                 if (output.Length > 0)
                 {
                     SetVirtualCursorPosition(lastCol, row);
@@ -250,6 +281,7 @@ namespace JustRoguelite.Devtools.Terminal
             }
         }
 
+        // Exit the screen buffer and restore to the underlying terminal.
         public void Exit()
         {
             Clear();
@@ -267,6 +299,7 @@ namespace JustRoguelite.Devtools.Terminal
 
             Console.Out.Flush();
 
+            // Platform-specific cleanup
             if (IsWinPlatform)
             {
                 WinConsole!.Cleanup();
@@ -310,6 +343,7 @@ namespace JustRoguelite.Devtools.Terminal
             }
         }
 
+        // Gets the ANSI color escape sequence for the given color attribute.
         string GetANSIColorString(int attr)
         {
             short fg = (short)((attr & 0xFF00) >> 8);

@@ -5,6 +5,10 @@ using System.Collections.Concurrent;
 
 namespace JustRoguelite.Devtools.Terminal
 {
+    // Main class responsible for handling keyboard input.
+    //
+    // On creation spawns a thread that reads input from the console,
+    // parsers it and adds it to a queue.
     public class Keyboard
     {
         public ConcurrentQueue<KeyboardInput> KeypressQueue = new ConcurrentQueue<KeyboardInput>();

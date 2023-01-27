@@ -6,8 +6,19 @@ using JustRoguelite.Devtools.Terminal;
 
 namespace JustRoguelite.Devtools.Editor
 {
+    // Currently, the editor supports two modes:
+    // - `Create` - for creating new data
+    // - `Edit` - for editing existing data
+    //
+    // Deletion is supported in `Edit` mode
+    // (the currently selected item is deleted when the `Delete` key is pressed)
     public enum Mode { Create, Edit, }
 
+    // Main `Editor` class
+    // 
+    // This class is responsible for the main loop of the editor.
+    // It also contains the lists of data for game structures,
+    // and the list of forms for editing them.
     public class Editor
     {
         static Screen screen;
@@ -44,6 +55,13 @@ namespace JustRoguelite.Devtools.Editor
 
         static bool started = false;
 
+        // Should be called before `Run()`.
+        // This method initializes the editor:
+        // - creates the screen and sets its dimensions
+        // - starts the keyboard input thread
+        // - creates the statusbar and sets its hotkeys
+        // - creates the list of forms for editing data
+        // - loads the data from the files
         static public void Setup(int width, int height)
         {
             screen = new Screen();
@@ -73,7 +91,11 @@ namespace JustRoguelite.Devtools.Editor
             started = true;
         }
 
-
+        // Main loop of the editor.
+        // This method is responsible for:
+        // - handling keyboard input
+        // - drawing the screen
+        // - saving the data to the files on exit
         public static void Run()
         {
             if (!started)
@@ -81,34 +103,49 @@ namespace JustRoguelite.Devtools.Editor
                 throw new Exception("Editor not started");
             }
 
+            // Initializes the underlying terminal driver
             screen.Init();
             exit = false;
 
             while (!exit)
             {
+                // Handle keyboard input
                 while (consoleKeyboard.KeypressQueue.TryDequeue(out KeyboardInput input))
                 {
+                    // First, if one of the inputs maps to a hotkey
+                    // in the statusbar, handle it.
                     if (status.HandleQuickAction(input))
                     {
                         continue;
                     }
+                    // Otherwise, pass the input to the current form.
                     SelectedForm.HandleInput(input);
                 }
 
+                // If a full redraw is needed, clear the screen
                 if (fullRedraw) { screen.Clear(); }
+                // and update it
                 if (redraw || fullRedraw) { Draw(); }
 
-                promptCounter--;
+                // If a prompt is set, decrease its counter
+                promptCounter = Math.Max(0, promptCounter - 1);
+                // and if it's time to remove it, do so
                 if (promptCounter <= 0)
                 {
                     prompt = "";
                     FullRedraw();
                 }
 
+                // Wait a bit before the next iteration
+                // (this is to prevent the CPU from being overloaded)
+                // no input is lost, because the keyboard input is handled
+                // in a separate thread
                 System.Threading.Thread.Sleep(50);
             }
 
+            // Since the editor is exiting, save the data
             SaveManager.SaveAllData(charData, skillData, itemData);
+            // and restore the terminal to its original state
             screen.Exit();
         }
 
@@ -152,6 +189,8 @@ namespace JustRoguelite.Devtools.Editor
             screen.AddString(prompt);
         }
 
+        // Status bar handlers
+
         static Func<KeyboardInput, bool> SelectFormHandler(int formIndex)
         {
             return (_) =>
@@ -161,7 +200,6 @@ namespace JustRoguelite.Devtools.Editor
                 return true;
             };
         }
-
         static bool AcceptHandler(KeyboardInput input)
         {
             var newData = forms[selectedForm].GetValues();

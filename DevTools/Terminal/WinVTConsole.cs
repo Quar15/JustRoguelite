@@ -3,6 +3,20 @@ using System.Runtime.InteropServices;
 
 namespace JustRoguelite.Devtools.Terminal
 {
+    // This class is responsible for setting up the Windows console to support VT100 escape sequences.
+    //
+    // Uses the raw Win32 API to set the console mode.
+    // See https://docs.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
+    // for more information.
+    //
+    // For the correct behaviour of the console, the following settings are required:
+    // On STDIN:
+    // - ENABLE_VIRTUAL_TERMINAL_INPUT disabled
+    // On STDOUT:
+    // - ENABLE_VIRTUAL_TERMINAL_PROCESSING enabled (required for VT100 escape sequences)
+    // - DISABLE_NEWLINE_AUTO_RETURN enabled (to control exactly when the cursor moves to the next line)
+    // On STDERR:
+    // - DISABLE_NEWLINE_AUTO_RETURN enabled (to control exactly when the cursor moves to the next line)
     internal class WinVTConsole
     {
         IntPtr InputHandle, OutputHandle, ErrorHandle;
@@ -11,12 +25,13 @@ namespace JustRoguelite.Devtools.Terminal
 
         public WinVTConsole()
         {
-            // Get input settings
+            // Get current input settings
             InputHandle = GetStdHandle(STD_INPUT_HANDLE);
             if (!GetConsoleMode(InputHandle, out uint mode))
             {
                 throw new Exception($"Unable to get input console mode, error code: {GetLastError()}.");
             }
+            // Save original settings
             originalInputMode = mode;
 
             // Update input settings
@@ -66,6 +81,7 @@ namespace JustRoguelite.Devtools.Terminal
             }
         }
 
+        // Restores the original console settings.
         public void Cleanup()
         {
             if (!SetConsoleMode(InputHandle, originalInputMode))

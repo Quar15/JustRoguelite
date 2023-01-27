@@ -2,6 +2,9 @@ using System;
 
 namespace JustRoguelite.Devtools.Terminal
 {
+    // Represents a single keypress.
+    //
+    // Contains the key itself, and flags for Alt, Ctrl and Shift.
     public struct KeyboardInput
     {
         public ConsoleKey Key { get; }

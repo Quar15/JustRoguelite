@@ -6,9 +6,16 @@ using JustRoguelite.Devtools.Terminal;
 
 namespace JustRoguelite.Devtools.Editor
 {
+    // Basic structure containing a display name for an action,
+    // and a handler function for said action.
     public struct HotKeyAction
     {
         public string name;
+
+        // The handler function is passed the KeyboardInput that
+        // triggered the action, and returns true if the action
+        // was handled, and false if it was not (allowing for differenciating
+        // whether to move on, or further propagate the input).
         public Func<KeyboardInput, bool> handler;
 
         public HotKeyAction(string name, Func<KeyboardInput, bool> handler)
@@ -18,8 +25,12 @@ namespace JustRoguelite.Devtools.Editor
         }
     }
 
+    // The status bar is a small bar at the bottom of the screen
+    // that displays the current mode, and a list of quick actions
+    // that can be performed.
     public class Statusbar
     {
+        // The main mapping of KeyboardInputs to Possible actions
         Dictionary<KeyboardInput, HotKeyAction> hotkeys = new();
 
         static ColorScheme createColors = new(Color.Black, Color.BrightGreen);

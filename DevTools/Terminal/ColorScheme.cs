@@ -1,5 +1,11 @@
 namespace JustRoguelite.Devtools.Terminal
 {
+    // A struct representing an ANSI color scheme.
+    //
+    // Contains a foreground and background color.
+    // Also contains methods for swapping the colors,
+    // and for creating a default color scheme.
+    // Can be implicitly converted to and from an int.
     public struct ColorScheme
     {
         public Color Foreground { get; }
@@ -27,6 +33,7 @@ namespace JustRoguelite.Devtools.Terminal
 
     }
 
+    // ANSI escape codes for colors
     public enum Color : byte
     {
         Black = 30,

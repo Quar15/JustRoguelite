@@ -2,6 +2,10 @@ using JustRoguelite.Devtools.Terminal;
 
 namespace JustRoguelite.Devtools.Editor
 {
+    // Base class for all forms in the editor.
+    //
+    // Contains the list of input fields, and methods for
+    // drawing and interacting with them.
     public abstract class DataForm
     {
         protected virtual string Header { get; set; } = "";

@@ -4,11 +4,18 @@ using JustRoguelite.Devtools.Terminal;
 
 namespace JustRoguelite.Devtools.Editor
 {
+    // Base class for an input field.
+    //
+    // Contains the name, value, and validator for the field.
+    // Also contains methods for drawing and handling input.
     public abstract class InputField
     {
         public string Name { get; }
         public StringBuilder Value { get; set; } = new();
 
+        // Validator is called on a new input character,
+        // returning true if the character is a valid input
+        // for the field.
         public Func<char, string, bool> Validator { get; set; } = (char c, string _) => Char.IsAscii(c);
 
         public static ColorScheme defaultColors = new(Color.White, Color.Black);
@@ -61,11 +68,13 @@ namespace JustRoguelite.Devtools.Editor
         }
     }
 
+    // Input field that accepts text input.
     public class TextInputField : InputField
     {
         public TextInputField(string name) : base(name) { }
     }
 
+    // Input field that accepts numeric input.
     public class NumericInputField : InputField
     {
         public NumericInputField(string name) : base(name)
