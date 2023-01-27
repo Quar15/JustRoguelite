@@ -92,6 +92,10 @@ namespace JustRoguelite.Characters
         public int GetMaxHP() { return (int)_characterStats.maxHP; }
         public int GetSpeed() { return _characterStats.speed; }
 
+        public int GetPhysicalResistance() { return _characterStats.physicalResistance; }
+
+        public int GetMagicalResistance() { return _characterStats.magicalResistance; }
+
         public void DebugLog(string? localization = null)
         {
             Logger.Instance().Info($"CharacterBase(\n\t\tID = {_ID}, BattleID = {GetBattleID()}, Name = '{GetName()}', CharacterType = {GetCharacterType()}, \n\t\tHP = {GetHP()}, MaxHP = {GetMaxHP()}, EXP = {_EXP}\n\t)", localization == null ? "CharacterBase.DebugLog()" : $"CharacterBase.DebugLog() -> {localization}");
@@ -162,7 +166,8 @@ namespace JustRoguelite.Characters
 
         internal CharacterBase(Dictionary<string, string> charDict)
         {
-            _ID = uint.Parse(charDict["id"]);
+            // _ID = uint.Parse(charDict["id"]);
+            _ID = charDict.ContainsKey("id") ? uint.Parse(charDict["id"]) : _nextID++;
             _name = charDict["name"];
             _description = charDict["description"];
             _characterBaseStats = JsonSerializer.Deserialize<CharacterStats>(charDict["characterBaseStats"])!;

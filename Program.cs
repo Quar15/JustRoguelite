@@ -3,6 +3,7 @@ using JustRoguelite.Utility;
 using JustRoguelite.Characters;
 using JustRoguelite.Skills;
 using JustRoguelite.Items;
+using JustRoguelite.Devtools.Editor;
 
 
 namespace JustRoguelite
@@ -24,15 +25,16 @@ namespace JustRoguelite
         {
             Logger.Instance().Info("Program START", "Program.Main()");
 
-            CharactersList charactersList;
-            List<SkillList> fullSkillsLists;
-            Inventory allItemsInventory;
-            SaveManager.LoadAll(out charactersList, out fullSkillsLists, out allItemsInventory);
+            // CharactersList charactersList;
+            // List<SkillList> fullSkillsLists;
+            // Inventory allItemsInventory;
+            // SaveManager.LoadAll(out charactersList, out fullSkillsLists, out allItemsInventory);
 
-            HandleMainMenuLoop();
+            // HandleMainMenuLoop();
 
-            DevTools.Loop(charactersList, fullSkillsLists, allItemsInventory);
-
+            // Devtools 
+            Editor.Setup(128, 30);
+            Editor.Run();
 
             Logger.Instance().Info("Program END", "Program.Main()");
         }

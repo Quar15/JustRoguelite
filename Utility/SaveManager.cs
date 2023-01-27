@@ -13,6 +13,7 @@ namespace JustRoguelite.Utility
         const string CHARACTERS_PATH = DATA_PATH + "Characters.json";
         const string SKILLS_PATH = DATA_PATH + "Skills.json";
         const string ITEMS_PATH = DATA_PATH + "Items.json";
+        const string BASE_STATS_PATH = DATA_PATH + "BaseStats.json";
 
         private static bool _dataPathExists = Directory.Exists(DATA_PATH);
 
@@ -25,34 +26,45 @@ namespace JustRoguelite.Utility
             }
         }
 
-        internal static CharactersList LoadCharacters()
+        internal static List<Dictionary<string, string>> LoadData(string path)
         {
             try
             {
-                string json = File.ReadAllText(CHARACTERS_PATH);
-                List<Dictionary<string, string>> charList = JsonSerializer.Deserialize<List<Dictionary<string, string>>>(json)!;
-
-                return new CharactersList(charList.Select(c =>
-                {
-                    CharacterType type = (CharacterType)Enum.Parse(typeof(CharacterType), c["Type"]);
-                    return type switch
-                    {
-                        CharacterType.PLAYER => new CharacterPlayer(c),
-                        CharacterType.ENEMY => new CharacterEnemy(c),
-                        CharacterType.NEUTRAL => new CharacterNeutral(c),
-                        _ => new CharacterBase(c),
-                    };
-                }).ToList());
+                string json = File.ReadAllText(path);
+                return JsonSerializer.Deserialize<List<Dictionary<string, string>>>(json)!;
             }
             catch (DirectoryNotFoundException)
             {
                 CreateDataPath();
-                return new CharactersList();
+                return new();
             }
             catch (FileNotFoundException)
             {
-                return new CharactersList();
+                return new();
             }
+        }
+
+        public static void SaveData(string path, List<Dictionary<string, string>> data)
+        {
+            CreateDataPath();
+
+            string json = JsonSerializer.Serialize(data);
+            File.WriteAllText(path, json);
+        }
+
+        internal static CharactersList LoadCharacters()
+        {
+            return new CharactersList(LoadData(CHARACTERS_PATH).Select(c =>
+            {
+                CharacterType type = (CharacterType)Enum.Parse(typeof(CharacterType), c["Type"]);
+                return type switch
+                {
+                    CharacterType.PLAYER => new CharacterPlayer(c),
+                    CharacterType.ENEMY => new CharacterEnemy(c),
+                    CharacterType.NEUTRAL => new CharacterNeutral(c),
+                    _ => new CharacterBase(c),
+                };
+            }).ToList());
         }
 
         public static void SaveCharacters(CharactersList characters)
@@ -61,7 +73,7 @@ namespace JustRoguelite.Utility
 
             var charList = characters.GetAll().ToList().Select(c => c.ToDict()).ToList();
 
-            string json = JsonSerializer.Serialize(characters);
+            string json = JsonSerializer.Serialize(charList);
             File.WriteAllText(CHARACTERS_PATH, json);
         }
 
@@ -125,6 +137,15 @@ namespace JustRoguelite.Utility
             File.WriteAllText(ITEMS_PATH, json);
         }
 
+        public static void LoadAllData(out List<Dictionary<string, string>> characters, out List<Dictionary<string, string>> skills, out List<Dictionary<string, string>> items)
+        {
+            Logger.Instance().Info("Loading data", "SaveManager.LoadAllData()");
+
+            characters = LoadData(CHARACTERS_PATH);
+            skills = LoadData(SKILLS_PATH);
+            items = LoadData(ITEMS_PATH);
+        }
+
         public static void LoadAll(out CharactersList characters, out List<SkillList> skills, out Inventory items)
         {
             Logger.Instance().Info("Loading data", "SaveManager.LoadAll()");
@@ -132,6 +153,15 @@ namespace JustRoguelite.Utility
             characters = LoadCharacters();
             skills = LoadSkills();
             items = LoadItems();
+        }
+
+        public static void SaveAllData(List<Dictionary<string, string>> characters, List<Dictionary<string, string>> skills, List<Dictionary<string, string>> items)
+        {
+            Logger.Instance().Info("Saving data", "SaveManager.SaveAllData()");
+
+            SaveData(CHARACTERS_PATH, characters);
+            SaveData(SKILLS_PATH, skills);
+            SaveData(ITEMS_PATH, items);
         }
 
         public static void SaveAll(CharactersList characters, List<SkillList> skills, Inventory items)
