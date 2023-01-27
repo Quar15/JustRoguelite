@@ -1,15 +1,13 @@
 using System;
 using System.Collections.Generic;
 
-using JustRoguelite.Characters;
-using JustRoguelite.Items;
-using JustRoguelite.Skills;
 using JustRoguelite.Utility;
 using JustRoguelite.Devtools.Terminal;
 
 namespace JustRoguelite.Devtools.Editor
 {
     public enum Mode { Create, Edit, }
+
     public class Editor
     {
         static Screen screen;
@@ -94,19 +92,11 @@ namespace JustRoguelite.Devtools.Editor
                     {
                         continue;
                     }
-                    if (SelectedForm.HandleInput(input))
-                    {
-                        continue;
-                    }
+                    SelectedForm.HandleInput(input);
                 }
-                if (fullRedraw)
-                {
-                    screen.Clear();
-                }
-                if (redraw || fullRedraw)
-                {
-                    Draw();
-                }
+
+                if (fullRedraw) { screen.Clear(); }
+                if (redraw || fullRedraw) { Draw(); }
 
                 promptCounter--;
                 if (promptCounter <= 0)
@@ -117,6 +107,7 @@ namespace JustRoguelite.Devtools.Editor
 
                 System.Threading.Thread.Sleep(50);
             }
+
             SaveManager.SaveAllData(charData, skillData, itemData);
             screen.Exit();
         }
@@ -261,7 +252,6 @@ namespace JustRoguelite.Devtools.Editor
             if (CurrentFormData.Count == 0)
             {
                 mode = Mode.Create;
-                SetPrompt("No data to edit");
                 SelectedForm.ClearFields();
                 return true;
             }

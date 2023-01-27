@@ -1,4 +1,5 @@
 using System.Text;
+
 using JustRoguelite.Devtools.Terminal;
 
 namespace JustRoguelite.Devtools.Editor
@@ -51,8 +52,10 @@ namespace JustRoguelite.Devtools.Editor
 
         public virtual void Draw(Screen screen, int x, int y, bool selected)
         {
+            var cs = selected ? selectedColors : defaultColors;
             screen.Move(x, y);
-            screen.AddString(Name, selected ? selectedColors : defaultColors);
+            screen.AddString(Name, cs);
+            screen.AddChar(':', cs);
             screen.Move(x, y + 1);
             screen.AddString(Value.ToString(), defaultColors);
         }
@@ -60,10 +63,7 @@ namespace JustRoguelite.Devtools.Editor
 
     public class TextInputField : InputField
     {
-        public TextInputField(string name) : base(name)
-        {
-            Validator = (char c, string _) => Char.IsAscii(c);
-        }
+        public TextInputField(string name) : base(name) { }
     }
 
     public class NumericInputField : InputField
@@ -74,31 +74,6 @@ namespace JustRoguelite.Devtools.Editor
                 Char.IsDigit(c) ||
                 (c == '-' && Value.Length == 0) ||
                 (c == '.' && !Value.ToString().Contains('.') && Value.Length > 0);
-        }
-    }
-
-    public class SelectionInputField : NumericInputField
-    {
-        public string[] Options { get; }
-        public int Selected { get; set; } = 0;
-
-        public SelectionInputField(string name, string[] options) : base(name)
-        {
-            Options = options;
-        }
-
-        public override void Draw(Screen screen, int x, int y, bool selected)
-        {
-            screen.Move(x, y);
-            screen.AddString(Name, selected ? selectedColors : defaultColors);
-            screen.Move(x + Name.Length + 1, y);
-            foreach (var option in Options)
-            {
-                screen.AddString(option, selected ? selectedColors : defaultColors);
-                screen.AddString(" ", selected ? selectedColors : defaultColors);
-            }
-            screen.Move(x, y + 1);
-            screen.AddString(Options[Selected], selected ? selectedColors : defaultColors);
         }
     }
 }

@@ -172,33 +172,6 @@ namespace JustRoguelite.Devtools.Terminal
             }
         }
 
-        public void ClearOne()
-        {
-            contents[crow, ccol, 0] = ' ';
-            contents[crow, ccol, 1] = 0;
-            contents[crow, ccol, 2] = 1;
-            dirtyRows[crow] = true;
-        }
-
-        // public void ClearScreen(Screen s) {
-        // 	// for (int row = s.X; row < s.Bottom; row++) {
-        // 	// 	for (int col = s.Left; col < r.Right; col++) {
-        // 	// 		contents[row, col, 0] = ' ';
-        // 	// 		contents[row, col, 1] = 0;
-        // 	// 		contents[row, col, 2] = 1;
-        // 	// 		dirtyRows[row] = true;
-        // 	// 	}
-        // 	// }
-        // 	for (int row = s.X; row < s.Bottom; row++) {
-        // 		for (int col = s.Left; col < s.Right; col++) {
-        // 			contents[row, col, 0] = ' ';
-        // 			contents[row, col, 1] = 0;
-        // 			contents[row, col, 2] = 1;
-        // 			dirtyRows[row] = true;
-        // 		}
-        // 	}
-        // }
-
         public void UpdateScreen()
         {
             if (Console.WindowHeight == 0 || contents.Length != Rows * Cols * 3)

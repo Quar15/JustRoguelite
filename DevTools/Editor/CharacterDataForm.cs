@@ -1,6 +1,4 @@
-
 using JustRoguelite.Characters;
-using JustRoguelite.Devtools.Terminal;
 
 namespace JustRoguelite.Devtools.Editor
 {

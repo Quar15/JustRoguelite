@@ -85,22 +85,6 @@ namespace JustRoguelite.Devtools.Editor
                 default:
                     return fields[selected].HandleInput(input);
             }
-            // if (input.Key == ConsoleKey.UpArrow)
-            // {
-            //     selected = (selected - 1 + fields.Count) % fields.Count;
-            //     Editor.Redraw();
-            //     return true;
-            // }
-            // else if (input.Key == ConsoleKey.DownArrow)
-            // {
-            //     selected = (selected + 1) % fields.Count;
-            //     Editor.Redraw();
-            //     return true;
-            // }
-            // else
-            // {
-            //     return fields[selected].HandleInput(input);
-            // }
         }
     }
 }

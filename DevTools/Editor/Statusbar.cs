@@ -8,10 +8,7 @@ namespace JustRoguelite.Devtools.Editor
 {
     public struct HotKeyAction
     {
-        // Action name
         public string name;
-        // Action handler
-        // Takes KeyboardInput and returns bool indicating whether the action was handled
         public Func<KeyboardInput, bool> handler;
 
         public HotKeyAction(string name, Func<KeyboardInput, bool> handler)
