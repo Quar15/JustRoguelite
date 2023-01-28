@@ -23,5 +23,17 @@ namespace JustRoguelite.Items
         {
             Logger.Instance().Info($"ItemData([{id}], {name}, {description}, {value}, {itemType})", "ItemData - DebugPrint()");
         }
+
+        internal Dictionary<string, string> ToDict()
+        {
+            Dictionary<string, string> itemDataDict = new();
+            itemDataDict.Add("id", id.ToString());
+            itemDataDict.Add("name", name);
+            itemDataDict.Add("description", description);
+            itemDataDict.Add("value", value.ToString());
+            itemDataDict.Add("itemType", itemType.ToString());
+
+            return itemDataDict;
+        }
     }
 }

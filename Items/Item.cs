@@ -46,5 +46,17 @@ namespace JustRoguelite.Items
         {
             Logger.Instance().Info($"Skill(\n\t\tID = {_ID}, Name = '{name}', \n\t\tDescription = '{description}'\n\t)", localization == null ? "Item.DebugLog()" : $"Item.DebugLog() -> {localization}");
         }
+
+        internal Dictionary<string, string> ToDict()
+        {
+            Dictionary<string, string> itemDataDict = new();
+            itemDataDict.Add("id", _ID.ToString());
+            itemDataDict.Add("name", name);
+            itemDataDict.Add("description", description);
+            itemDataDict.Add("value", value.ToString());
+            itemDataDict.Add("itemType", _itemType.ToString());
+
+            return itemDataDict;
+        }
     }
 }

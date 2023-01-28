@@ -27,5 +27,17 @@ namespace JustRoguelite.Skills
         {
             Logger.Instance().Info($"SkillData([{id}], {name}, {description}, {damageType}, {skillType})", "SkillData - DebugPrint()");
         }
+
+        internal Dictionary<string, string> ToDict()
+        {
+            Dictionary<string, string> skillDataDict = new();
+            skillDataDict.Add("id", id.ToString());
+            skillDataDict.Add("name", name);
+            skillDataDict.Add("description", description);
+            skillDataDict.Add("values", values.ToString());
+            skillDataDict.Add("damageType", damageType.ToString());
+
+            return skillDataDict;
+        }
     }
 }

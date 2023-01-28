@@ -1,4 +1,5 @@
 ﻿using JustRoguelite.Utility;
+using System.Text.Json;
 
 namespace JustRoguelite.Characters
 {
@@ -39,6 +40,18 @@ namespace JustRoguelite.Characters
         public void DebugPrint()
         {
             Logger.Instance().Info($"CharacterData([{id}], {name}, {description}, {characterType})", "CharacterData - DebugPrint()");
+        }
+
+        internal Dictionary<string, string> ToDict()
+        {
+            Dictionary<string, string> characterDataDict = new();
+            characterDataDict.Add("id", id.ToString());
+            characterDataDict.Add("name", name);
+            characterDataDict.Add("description", description);
+            characterDataDict.Add("characterBaseStats", JsonSerializer.Serialize(characterBaseStats));
+            characterDataDict.Add("characterType", characterType.ToString());
+
+            return characterDataDict;
         }
     }
 }
