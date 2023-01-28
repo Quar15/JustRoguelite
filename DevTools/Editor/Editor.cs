@@ -36,12 +36,14 @@ namespace JustRoguelite.Devtools.Editor
         static List<Dictionary<string, string>> charData = new();
         static List<Dictionary<string, string>> itemData = new();
         static List<Dictionary<string, string>> skillData = new();
+        static List<Dictionary<string, string>> baseStatsData = new();
 
         static List<Dictionary<string, string>> CurrentFormData => selectedForm switch
         {
             0 => charData,
             1 => itemData,
             2 => skillData,
+            3 => baseStatsData,
             _ => throw new Exception("Invalid form index"),
         };
 
@@ -81,12 +83,13 @@ namespace JustRoguelite.Devtools.Editor
                 (new KeyboardInput(ConsoleKey.S, isAlt: true, isShift: true), new HotKeyAction("Save", SaveHandler)),
                 (new KeyboardInput(ConsoleKey.C, isShift: true), new HotKeyAction("Character", SelectFormHandler(0))),
                 (new KeyboardInput(ConsoleKey.I, isShift: true), new HotKeyAction("Item", SelectFormHandler(1))),
-                (new KeyboardInput(ConsoleKey.S, isShift: true), new HotKeyAction("Skill", SelectFormHandler(2)))
+                (new KeyboardInput(ConsoleKey.S, isShift: true), new HotKeyAction("Skill", SelectFormHandler(2))),
+                (new KeyboardInput(ConsoleKey.B, isShift: true), new HotKeyAction("Base Stats", SelectFormHandler(3)))
             );
 
-            forms = new List<DataForm>() { new CharacterDataForm(), new ItemDataForm(), new SkillDataForm() };
+            forms = new List<DataForm>() { new CharacterDataForm(), new ItemDataForm(), new SkillDataForm(), new BaseStatsDataForm() };
 
-            SaveManager.LoadAllData(out charData, out itemData, out skillData);
+            SaveManager.LoadAllData(out baseStatsData, out charData, out skillData, out itemData);
 
             started = true;
         }
@@ -144,7 +147,7 @@ namespace JustRoguelite.Devtools.Editor
             }
 
             // Since the editor is exiting, save the data
-            SaveManager.SaveAllData(charData, skillData, itemData);
+            SaveManager.SaveAllData(baseStatsData, charData, skillData, itemData);
             // and restore the terminal to its original state
             screen.Exit();
         }
@@ -203,7 +206,7 @@ namespace JustRoguelite.Devtools.Editor
         static bool AcceptHandler(KeyboardInput input)
         {
             var newData = forms[selectedForm].GetValues();
-            if (newData == null || newData.Any(f => f.Value.Length == 0))
+            if (newData == null)
             {
                 SetPrompt("Invalid data");
                 return true;
@@ -211,6 +214,7 @@ namespace JustRoguelite.Devtools.Editor
 
             if (mode == Mode.Edit)
             {
+                newData["Id"] = CurrentFormData[listItemIndex]["Id"];
                 CurrentFormData[listItemIndex] = newData;
                 listItemIndex = 0;
                 mode = Mode.Create;
@@ -218,8 +222,12 @@ namespace JustRoguelite.Devtools.Editor
             }
             else
             {
+                Console.Write(CurrentFormData.Count);
+
+                var nextId = CurrentFormData.Count > 0 ? CurrentFormData.Max(x => uint.Parse(x["Id"])) + 1 : 0;
+                newData["Id"] = nextId.ToString();
                 CurrentFormData.Add(newData);
-                SetPrompt("Data added");
+                SetPrompt($"Data added (ID {nextId})");
             }
             SelectedForm.ClearFields();
             return true;
@@ -301,9 +309,15 @@ namespace JustRoguelite.Devtools.Editor
 
         static bool SaveHandler(KeyboardInput input)
         {
-            SaveManager.SaveAllData(charData, skillData, itemData);
+            SaveManager.SaveAllData(baseStatsData, charData, skillData, itemData);
             SetPrompt("Data saved");
             return true;
+        }
+
+        // In case of crash, this method will be called to restore the terminal
+        ~Editor()
+        {
+            screen.Exit();
         }
     }
 }

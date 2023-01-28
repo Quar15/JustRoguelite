@@ -1,6 +1,7 @@
 ﻿using System;
 
 using JustRoguelite.Utility;
+using JustRoguelite.Devtools.Editor;
 
 namespace JustRoguelite.Skills
 {
@@ -19,7 +20,7 @@ namespace JustRoguelite.Skills
         public DamageType damageType;
         public List<int> values = new();
 
-        public Skill(string name = "SkillName", string description = "", DamageType damageType = DamageType.PHYSICAL, List<int>? values = null) 
+        public Skill(string name = "SkillName", string description = "", DamageType damageType = DamageType.PHYSICAL, List<int>? values = null)
         {
             _nextID++;
             _ID = _nextID;
@@ -33,7 +34,7 @@ namespace JustRoguelite.Skills
                 this.values = values;
         }
 
-        public Skill(SkillData skillData) 
+        public Skill(SkillData skillData)
         {
             this.name = skillData.name;
             this.description = skillData.description;
@@ -46,23 +47,21 @@ namespace JustRoguelite.Skills
             Logger.Instance().Info($"Skill(\n\t\tID = {_ID}, Name = '{name}', \n\t\tDescription = '{description}',\n\t\tDamageType = {damageType}\n\t)", localization == null ? "Skill.DebugLog()" : $"Skill.DebugLog() -> {localization}");
         }
 
-        internal Dictionary<string, string> ToDict()
-        {
-            Dictionary<string, string> skillDataDict = new();
-            skillDataDict.Add("id", _ID.ToString());
-            skillDataDict.Add("name", name);
-            skillDataDict.Add("description", description);
-            skillDataDict.Add("values", values.ToString());
-            skillDataDict.Add("damageType", damageType.ToString());
-
-            return skillDataDict;
-        }
-
         public virtual bool TryToExecute(Characters.CharacterBase castingCharacter, Characters.CharacterBase targetCharacter)
         {
             Logger.Instance().Warning("You should override TryToExecute(...) function!", "Skill.TryToExecute()");
 
             return true;
+        }
+
+        static public uint NextID()
+        {
+            return _nextID++;
+        }
+
+        public void SetNextID(uint ID)
+        {
+            _nextID = ID + 1;
         }
     }
 }

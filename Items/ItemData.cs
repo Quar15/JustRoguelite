@@ -10,7 +10,7 @@ namespace JustRoguelite.Items
         public int value;
         public ItemType itemType;
 
-        public ItemData(uint id, string name, string description, int value, ItemType itemType) 
+        public ItemData(uint id, string name, string description, int value, ItemType itemType)
         {
             this.id = id;
             this.name = name;
@@ -24,16 +24,26 @@ namespace JustRoguelite.Items
             Logger.Instance().Info($"ItemData([{id}], {name}, {description}, {value}, {itemType})", "ItemData - DebugPrint()");
         }
 
-        internal Dictionary<string, string> ToDict()
+        internal Dictionary<string, string> AsDict()
         {
-            Dictionary<string, string> itemDataDict = new();
-            itemDataDict.Add("id", id.ToString());
-            itemDataDict.Add("name", name);
-            itemDataDict.Add("description", description);
-            itemDataDict.Add("value", value.ToString());
-            itemDataDict.Add("itemType", itemType.ToString());
+            Dictionary<string, string> dict = new();
+            dict.Add("Id", id.ToString());
+            dict.Add("Name", name);
+            dict.Add("Description", description);
+            dict.Add("Value", value.ToString());
+            dict.Add("Item Type", itemType.ToString());
+            return dict;
+        }
 
-            return itemDataDict;
+        internal static ItemData FromDict(Dictionary<string, string> itemDataDict)
+        {
+            return new ItemData(
+                uint.Parse(itemDataDict["Id"]),
+                itemDataDict["Name"],
+                itemDataDict["Description"],
+                int.Parse(itemDataDict["Value"]),
+                (ItemType)System.Enum.Parse(typeof(ItemType), itemDataDict["Item Type"])
+            );
         }
     }
 }

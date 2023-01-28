@@ -28,40 +28,28 @@ namespace JustRoguelite
             cdList.Add(character1);
             cdList.Add(character2);
 
-            // SaveManager.SaveCharacters(cdList);
+            SaveManager.SaveCharacters(cdList);
 
-            /* Test CharacterList save */
-            CharacterEnemy e = new(character1);
-            CharacterEnemy e2 = new(character2);
 
-            CharactersList list = new CharactersList();
-            list.Add(e);
-            list.Add(e2);
+            /* Test ItemDataList save */
+            ItemData item = new(1, "Test1", "Test Description", 25, ItemType.EQUIPABLE);
+            ItemData item2 = new(2, "Test1", "Test Description", 25, ItemType.QUEST);
 
-            SaveManager.SaveCharacters(list);
+            ItemDataList items = new ItemDataList();
+            items.Add(item);
+            items.Add(item2);
 
-            /* Test inventory save */
-            Item item = new("Test1", "Test Description", 25, ItemType.EQUIPABLE);
-            Item item2 = new("Test1", "Test Description", 25, ItemType.QUEST);
+            SaveManager.SaveItems(items);
 
-            Inventory inventory = new Inventory();
-            inventory.Add(item);
-            inventory.Add(item2);
+            /* Test SkillDataList save */
+            SkillData skill = new(1, "Test1", "Test Description", new() { 1 }, DamageType.PHYSICAL, SkillType.ATTACK);
+            SkillData skill2 = new(2, "Test1", "Test Description", new() { 1, 3, 1 }, DamageType.MAGIC, SkillType.SPECIAL);
 
-            SaveManager.SaveItems(inventory);
+            SkillDataList skills = new SkillDataList();
+            skills.Add(skill);
+            skills.Add(skill2);
 
-            /* Test skillList save */
-            Skill skill = new("Test1", "Test Description", DamageType.PHYSICAL);
-            Skill skill2 = new("Test1", "Test Description", DamageType.MAGIC);
-
-            SkillList skills = new SkillList(SkillType.ATTACK);
-            inventory.Add(item);
-            inventory.Add(item2);
-
-            List<SkillList> sList = new List<SkillList>();
-            sList.Add(skills);
-
-            SaveManager.SaveSkills(sList);
+            SaveManager.SaveSkills(skills);
 
             // Devtools 
             Editor.Setup(128, 30);

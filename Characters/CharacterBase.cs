@@ -4,6 +4,7 @@ using System.Text.Json;
 
 using JustRoguelite.Utility;
 using JustRoguelite.Skills;
+using JustRoguelite.Devtools.Editor;
 
 namespace JustRoguelite.Characters
 {
@@ -146,36 +147,25 @@ namespace JustRoguelite.Characters
             return true;
         }
 
-        internal Dictionary<string, string> ToDict()
+        internal static CharacterBase FromDict(Dictionary<string, string> dict, List<CharacterStats> characterStatsList)
         {
-            Dictionary<string, string> characterData = new();
-            characterData.Add("id", _ID.ToString());
-            characterData.Add("name", _name);
-            characterData.Add("description", _description);
-            characterData.Add("characterBaseStats", JsonSerializer.Serialize(_characterBaseStats));
-            characterData.Add("characterStats", JsonSerializer.Serialize(_characterStats));
-            characterData.Add("battleID", _battleID.ToString());
-            characterData.Add("characterType", _characterType.ToString());
-            characterData.Add("HP", _HP.ToString());
-            characterData.Add("EXP", _EXP.ToString());
-
-            return characterData;
+            var baseStats = characterStatsList.Find(x => x.GetID() == uint.Parse(dict["Base Stats ID"]));
+            if (baseStats == null)
+            {
+                baseStats = new CharacterStats();
+            }
+            CharacterData characterData = new(uint.Parse(dict["Id"]), dict["Name"], dict["Description"], baseStats, (CharacterType)Enum.Parse(typeof(CharacterType), dict["Character Type"]));
+            return new CharacterBase(characterData);
         }
 
-        internal CharacterBase(Dictionary<string, string> charDict)
+        static public uint NextID()
         {
-            // _ID = uint.Parse(charDict["id"]);
-            _ID = charDict.ContainsKey("id") ? uint.Parse(charDict["id"]) : _nextID++;
-            _name = charDict["name"];
-            _description = charDict["description"];
-            _characterBaseStats = JsonSerializer.Deserialize<CharacterStats>(charDict["characterBaseStats"])!;
-            _characterStats = JsonSerializer.Deserialize<CharacterStats>(charDict["characterStats"])!;
-            _battleID = int.Parse(charDict["battleID"]);
-            _characterType = (CharacterType)Enum.Parse(typeof(CharacterType), charDict["characterType"]);
-            _HP = int.Parse(charDict["HP"]);
-            _EXP = int.Parse(charDict["EXP"]);
+            return _nextID++;
+        }
 
-            turnExecuted += TurnExecutedLog;
+        public void SetNextID(uint ID)
+        {
+            _nextID = ID + 1;
         }
     }
 }

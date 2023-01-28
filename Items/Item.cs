@@ -1,6 +1,7 @@
 ﻿using System;
 
 using JustRoguelite.Utility;
+using JustRoguelite.Devtools.Editor;
 
 namespace JustRoguelite.Items
 {
@@ -21,7 +22,7 @@ namespace JustRoguelite.Items
         public ItemType GetItemType() { return _itemType; }
         public void SetItemType(ItemType type) { _itemType = type; }
 
-        public Item(string name = "Item", string description = "", int value = 0, ItemType itemType = ItemType.USABLE) 
+        public Item(string name = "Item", string description = "", int value = 0, ItemType itemType = ItemType.USABLE)
         {
             _nextID++;
             _ID = _nextID;
@@ -32,7 +33,7 @@ namespace JustRoguelite.Items
             this._itemType = itemType;
         }
 
-        public Item(ItemData itemData) 
+        public Item(ItemData itemData)
         {
             _ID = itemData.id;
             _nextID = itemData.id + 1;
@@ -42,21 +43,19 @@ namespace JustRoguelite.Items
             this._itemType = itemData.itemType;
         }
 
-        public void DebugLog(string? localization = null) 
+        public void DebugLog(string? localization = null)
         {
             Logger.Instance().Info($"Skill(\n\t\tID = {_ID}, Name = '{name}', \n\t\tDescription = '{description}'\n\t)", localization == null ? "Item.DebugLog()" : $"Item.DebugLog() -> {localization}");
         }
 
-        internal Dictionary<string, string> ToDict()
+        static public uint NextID()
         {
-            Dictionary<string, string> itemDataDict = new();
-            itemDataDict.Add("id", _ID.ToString());
-            itemDataDict.Add("name", name);
-            itemDataDict.Add("description", description);
-            itemDataDict.Add("value", value.ToString());
-            itemDataDict.Add("itemType", _itemType.ToString());
+            return _nextID++;
+        }
 
-            return itemDataDict;
+        public void SetNextID(uint ID)
+        {
+            _nextID = ID + 1;
         }
     }
 }
