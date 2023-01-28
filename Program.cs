@@ -10,7 +10,8 @@ namespace JustRoguelite
 {
     public static class Globals
     {
-        public const LogType LOG_TYPE = LogType.CONSOLE;
+        public const LogType LOG_TYPE = LogType.FILE;
+        public const uint MAX_LOGS_N = 100;
     }
 
 
@@ -69,6 +70,7 @@ namespace JustRoguelite
 
 
             Logger.Instance().Info("Program END", "Program.Main()");
+            Logger.Instance().SaveLogs();
         }
     }
 }

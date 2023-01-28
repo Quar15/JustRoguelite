@@ -7,6 +7,8 @@ namespace JustRoguelite.Utility
     {
         private static Logger _instance;
 
+        private Queue<string> _logs = new();
+
         protected Logger() { }
 
         public static Logger Instance()
@@ -18,14 +20,29 @@ namespace JustRoguelite.Utility
 
         private void Log(string msg, string objectName, string msgType, ConsoleColor msgTypeColor)
         {
-            if (Globals.LOG_TYPE != LogType.CONSOLE) return;
+            switch (Globals.LOG_TYPE) 
+            {
+                case LogType.NONE:
+                    return;
 
-            ConsoleColor beforeFGColor = Console.ForegroundColor;
-            Console.ForegroundColor = msgTypeColor;
-            Console.Write($"@{msgType}");
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine($" - [{objectName}] - {msg}");
-            Console.ForegroundColor = beforeFGColor;
+                case LogType.CONSOLE:
+                    ConsoleColor beforeFGColor = Console.ForegroundColor;
+                    Console.ForegroundColor = msgTypeColor;
+                    Console.Write($"@{msgType}");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine($" - [{objectName}] - {msg}");
+                    Console.ForegroundColor = beforeFGColor;
+                    break;
+
+                case LogType.FILE:
+                    _logs.Enqueue($"@{msgType} - [{objectName}] - {msg}");
+                    if(_logs.Count > Globals.MAX_LOGS_N)
+                        _logs.Dequeue();
+                    break;
+
+                default:
+                    return;
+            }            
         }
 
         public void Info(string msg, string objectName)
@@ -41,6 +58,16 @@ namespace JustRoguelite.Utility
         public void Error(string msg, string objectName)
         {
             Log(msg, objectName, "ERROR", ConsoleColor.Red);
+        }
+
+        public void SaveLogs(string fileName = "./logs.txt") 
+        {
+            using StreamWriter file = new(fileName);
+            
+            foreach(var log in _logs) 
+            {
+                file.WriteLine(log);
+            }
         }
     }
 }
