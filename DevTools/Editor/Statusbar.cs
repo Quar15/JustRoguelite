@@ -35,6 +35,7 @@ namespace JustRoguelite.Devtools.Editor
 
         static ColorScheme createColors = new(Color.Black, Color.BrightGreen);
         static ColorScheme editColors = new(Color.Black, Color.BrightRed);
+        static ColorScheme searchColors = new(Color.Black, Color.BrightYellow);
 
         // public Mode mode = Mode.Create;
 
@@ -70,16 +71,22 @@ namespace JustRoguelite.Devtools.Editor
         public void Draw(Screen screen)
         {
             sb.Clear();
-            var cs = Editor.Mode == Mode.Create ? createColors : editColors;
+            var cs = Editor.Mode switch
+            {
+                Mode.Create => createColors,
+                Mode.Edit => editColors,
+                Mode.Search => searchColors,
+                _ => throw new NotImplementedException()
+            };
+
             foreach (var (input, action) in hotkeys)
             {
-                var keymap = $"{action.name}: {input}  ";
+                var keymap = $"{action.name}: {input} ";
                 if (sb.Length + keymap.Length - 2 > screen.Cols)
                 {
                     screen.Move(0, screen.Rows - 2);
                     screen.AddString(sb.ToString().PadRight(screen.Cols), cs);
                     sb.Clear();
-
                 }
                 sb.Append(keymap);
             }
