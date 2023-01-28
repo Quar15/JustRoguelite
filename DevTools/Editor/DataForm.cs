@@ -42,11 +42,15 @@ namespace JustRoguelite.Devtools.Editor
             }
         }
 
-        public virtual Dictionary<string, string> GetValues()
+        public virtual Dictionary<string, string>? GetValues()
         {
             Dictionary<string, string> values = new();
             foreach (var field in fields)
             {
+                if (!field.Validator(field.Value.ToString()))
+                {
+                    return null;
+                }
                 values.Add(field.Name, field.Value.ToString());
             }
             return values;

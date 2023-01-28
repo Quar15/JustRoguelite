@@ -12,7 +12,7 @@ namespace JustRoguelite.Devtools.Editor
     //
     // Deletion is supported in `Edit` mode
     // (the currently selected item is deleted when the `Delete` key is pressed)
-    public enum Mode { Create, Edit, }
+    public enum Mode { Create, Edit, Search }
 
     // Main `Editor` class
     // 
@@ -36,12 +36,14 @@ namespace JustRoguelite.Devtools.Editor
         static List<Dictionary<string, string>> charData = new();
         static List<Dictionary<string, string>> itemData = new();
         static List<Dictionary<string, string>> skillData = new();
+        static List<Dictionary<string, string>> baseStatsData = new();
 
         static List<Dictionary<string, string>> CurrentFormData => selectedForm switch
         {
             0 => charData,
             1 => itemData,
             2 => skillData,
+            3 => baseStatsData,
             _ => throw new Exception("Invalid form index"),
         };
 
@@ -50,9 +52,7 @@ namespace JustRoguelite.Devtools.Editor
 
         static int listItemIndex = 0;
 
-        static string prompt = "";
-        static int promptCounter = 0;
-
+        static Prompt prompt = new();
         static bool started = false;
 
         // Should be called before `Run()`.
@@ -75,18 +75,20 @@ namespace JustRoguelite.Devtools.Editor
                 (new KeyboardInput(ConsoleKey.Enter), new HotKeyAction("Accept", AcceptHandler)),
                 (new KeyboardInput(ConsoleKey.A, isAlt: true), new HotKeyAction("Add", CreateModeHandler)),
                 (new KeyboardInput(ConsoleKey.E, isAlt: true), new HotKeyAction("Edit", EditModeHandler)),
+                (new KeyboardInput(ConsoleKey.S, isAlt: true), new HotKeyAction("Search", SearchModeHandler)),
                 (new KeyboardInput(ConsoleKey.RightArrow), new HotKeyAction("Next", ChangeItemHandler)),
                 (new KeyboardInput(ConsoleKey.LeftArrow), new HotKeyAction("Prev", ChangeItemHandler)),
                 (new KeyboardInput(ConsoleKey.Delete), new HotKeyAction("Delete", DeleteHandler)),
                 (new KeyboardInput(ConsoleKey.S, isAlt: true, isShift: true), new HotKeyAction("Save", SaveHandler)),
                 (new KeyboardInput(ConsoleKey.C, isShift: true), new HotKeyAction("Character", SelectFormHandler(0))),
                 (new KeyboardInput(ConsoleKey.I, isShift: true), new HotKeyAction("Item", SelectFormHandler(1))),
-                (new KeyboardInput(ConsoleKey.S, isShift: true), new HotKeyAction("Skill", SelectFormHandler(2)))
+                (new KeyboardInput(ConsoleKey.S, isShift: true), new HotKeyAction("Skill", SelectFormHandler(2))),
+                (new KeyboardInput(ConsoleKey.B, isShift: true), new HotKeyAction("Base Stats", SelectFormHandler(3)))
             );
 
-            forms = new List<DataForm>() { new CharacterDataForm(), new ItemDataForm(), new SkillDataForm() };
+            forms = new List<DataForm>() { new CharacterDataForm(), new ItemDataForm(), new SkillDataForm(), new BaseStatsDataForm() };
 
-            SaveManager.LoadAllData(out charData, out itemData, out skillData);
+            SaveManager.LoadAllData(out baseStatsData, out charData, out skillData, out itemData);
 
             started = true;
         }
@@ -118,6 +120,12 @@ namespace JustRoguelite.Devtools.Editor
                     {
                         continue;
                     }
+                    // Then, check if current prompt is active
+                    // and handle the input if it is.
+                    if (prompt.HandleInput(input))
+                    {
+                        continue;
+                    }
                     // Otherwise, pass the input to the current form.
                     SelectedForm.HandleInput(input);
                 }
@@ -128,13 +136,7 @@ namespace JustRoguelite.Devtools.Editor
                 if (redraw || fullRedraw) { Draw(); }
 
                 // If a prompt is set, decrease its counter
-                promptCounter = Math.Max(0, promptCounter - 1);
-                // and if it's time to remove it, do so
-                if (promptCounter <= 0)
-                {
-                    prompt = "";
-                    FullRedraw();
-                }
+                prompt.Tick();
 
                 // Wait a bit before the next iteration
                 // (this is to prevent the CPU from being overloaded)
@@ -144,24 +146,15 @@ namespace JustRoguelite.Devtools.Editor
             }
 
             // Since the editor is exiting, save the data
-            SaveManager.SaveAllData(charData, skillData, itemData);
+            SaveManager.SaveAllData(baseStatsData, charData, skillData, itemData);
             // and restore the terminal to its original state
             screen.Exit();
         }
 
-        public static void SetPrompt(string text, int counter = 50)
-        {
-            prompt = text;
-            promptCounter = counter;
-            if (promptCounter > 0)
-            {
-                FullRedraw();
-            }
-            else
-            {
-                Redraw();
-            }
-        }
+        // public static void SetPrompt(string text, int counter = 50)
+        // {
+        //     prompt
+        // }
 
         public static void Redraw()
         {
@@ -176,17 +169,11 @@ namespace JustRoguelite.Devtools.Editor
         public static void Draw()
         {
             SelectedForm.Draw(screen);
-            DrawPrompt();
+            prompt.Draw(screen);
             status.Draw(screen);
             screen.UpdateScreen();
             redraw = false;
             fullRedraw = false;
-        }
-
-        static void DrawPrompt()
-        {
-            screen.Move(0, screen.Rows - 3);
-            screen.AddString(prompt);
         }
 
         // Status bar handlers
@@ -202,24 +189,51 @@ namespace JustRoguelite.Devtools.Editor
         }
         static bool AcceptHandler(KeyboardInput input)
         {
-            var newData = forms[selectedForm].GetValues();
-            if (newData == null || newData.Any(f => f.Value.Length == 0))
+            if (mode == Mode.Search)
             {
-                SetPrompt("Invalid data");
+                SearchPrompt searchPrompt = (SearchPrompt)prompt;
+                var searchResult = CurrentFormData.FindIndex(x => x["Id"] == searchPrompt.Input);
+
+                prompt = new Prompt();
+                if (searchResult != -1)
+                {
+                    listItemIndex = searchResult;
+                    SelectedForm.SetValues(CurrentFormData[listItemIndex]);
+                    mode = Mode.Edit;
+                    prompt.SetPrompt("Data found", 50);
+                }
+                else
+                {
+                    prompt.SetPrompt("Data not found", 50);
+                    mode = Mode.Create;
+                }
+                FullRedraw();
+                return true;
+            }
+
+            var newData = forms[selectedForm].GetValues();
+            if (newData == null)
+            {
+                prompt.SetPrompt("Invalid data", 50);
                 return true;
             }
 
             if (mode == Mode.Edit)
             {
+                newData["Id"] = CurrentFormData[listItemIndex]["Id"];
                 CurrentFormData[listItemIndex] = newData;
                 listItemIndex = 0;
                 mode = Mode.Create;
-                SetPrompt("Data updated");
+                prompt.SetPrompt("Data edited", 50);
             }
             else
             {
+                Console.Write(CurrentFormData.Count);
+
+                var nextId = CurrentFormData.Count > 0 ? CurrentFormData.Max(x => uint.Parse(x["Id"])) + 1 : 0;
+                newData["Id"] = nextId.ToString();
                 CurrentFormData.Add(newData);
-                SetPrompt("Data added");
+                prompt.SetPrompt($"Data added (ID {nextId})", 50);
             }
             SelectedForm.ClearFields();
             return true;
@@ -234,12 +248,12 @@ namespace JustRoguelite.Devtools.Editor
             listItemIndex = 0;
             if (CurrentFormData.Count == 0)
             {
-                SetPrompt("No data to edit");
+                prompt.SetPrompt("No data to edit", 50);
                 return true;
             }
 
             mode = Mode.Edit;
-            SetPrompt($"Edit mode (item {listItemIndex + 1}/{CurrentFormData.Count})");
+            prompt.SetPrompt($"Edit mode (item {listItemIndex + 1}/{CurrentFormData.Count})", 50);
             SelectedForm.ClearFields();
             SelectedForm.SetValues(CurrentFormData[listItemIndex]);
             return true;
@@ -251,7 +265,7 @@ namespace JustRoguelite.Devtools.Editor
             {
                 return false;
             }
-            SetPrompt("Create mode");
+            prompt.SetPrompt("Create mode", 50);
             mode = Mode.Create;
             SelectedForm.ClearFields();
             return true;
@@ -273,7 +287,7 @@ namespace JustRoguelite.Devtools.Editor
                 listItemIndex = (listItemIndex - 1 + CurrentFormData.Count) % CurrentFormData.Count;
             }
 
-            SetPrompt($"Edit mode (item {listItemIndex + 1}/{CurrentFormData.Count})");
+            prompt.SetPrompt($"Edit mode (item {listItemIndex + 1}/{CurrentFormData.Count})", 50);
             SelectedForm.ClearFields();
             SelectedForm.SetValues(CurrentFormData[listItemIndex]);
             return true;
@@ -286,7 +300,7 @@ namespace JustRoguelite.Devtools.Editor
                 return false;
             }
             CurrentFormData.RemoveAt(listItemIndex);
-            SetPrompt("Data deleted");
+            prompt.SetPrompt("Data deleted", 50);
             listItemIndex = Math.Max(0, listItemIndex - 1);
             if (CurrentFormData.Count == 0)
             {
@@ -299,11 +313,26 @@ namespace JustRoguelite.Devtools.Editor
             return true;
         }
 
+        static bool SearchModeHandler(KeyboardInput input)
+        {
+            SelectedForm.ClearFields();
+            mode = Mode.Search;
+            prompt = new SearchPrompt();
+            prompt.SetPrompt("Search by id: ");
+            return true;
+        }
+
         static bool SaveHandler(KeyboardInput input)
         {
-            SaveManager.SaveAllData(charData, skillData, itemData);
-            SetPrompt("Data saved");
+            SaveManager.SaveAllData(baseStatsData, charData, skillData, itemData);
+            prompt.SetPrompt("Data saved", 50);
             return true;
+        }
+
+        // In case of crash, this method will be called to restore the terminal
+        ~Editor()
+        {
+            screen.Exit();
         }
     }
 }

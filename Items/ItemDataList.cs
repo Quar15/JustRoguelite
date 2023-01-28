@@ -6,6 +6,15 @@ namespace JustRoguelite.Items
     {
         private List<ItemData> _itemDataList = new();
 
+        public ItemDataList()
+        {
+        }
+
+        public ItemDataList(List<ItemData> itemDataList)
+        {
+            _itemDataList = itemDataList;
+        }
+
         public void Add(ItemData item)
         {
             _itemDataList.Add(item);

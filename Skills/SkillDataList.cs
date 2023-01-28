@@ -6,6 +6,15 @@ namespace JustRoguelite.Skills
     {
         private List<SkillData> _skillDataList = new();
 
+        public SkillDataList()
+        {
+        }
+
+        public SkillDataList(List<SkillData> skillDataList)
+        {
+            _skillDataList = skillDataList;
+        }
+
         public void Add(SkillData item)
         {
             _skillDataList.Add(item);
@@ -18,7 +27,7 @@ namespace JustRoguelite.Skills
 
         public void DebugPrintList()
         {
-            foreach (SkillData sd in _skillDataList) 
+            foreach (SkillData sd in _skillDataList)
             {
                 sd.DebugPrint();
             }
@@ -48,7 +57,7 @@ namespace JustRoguelite.Skills
         public bool Remove(int id)
         {
             SkillData? sd = GetItem(id);
-            
+
             if (sd == null)
                 return false;
 

@@ -6,6 +6,13 @@ namespace JustRoguelite.Characters
     {
         private List<CharacterData> _characterDataList = new();
 
+        public CharacterDataList()
+        {
+        }
+        public CharacterDataList(List<CharacterData> characterDataList)
+        {
+            _characterDataList = characterDataList;
+        }
         public void Add(CharacterData item)
         {
             _characterDataList.Add(item);
@@ -18,7 +25,7 @@ namespace JustRoguelite.Characters
 
         public void DebugPrintList()
         {
-            foreach (CharacterData cd in _characterDataList) 
+            foreach (CharacterData cd in _characterDataList)
                 cd.DebugPrint();
         }
 
