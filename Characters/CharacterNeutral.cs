@@ -10,6 +10,8 @@ namespace JustRoguelite.Characters
             SetCharacterType(CharacterType.NEUTRAL);
         }
 
+        public CharacterNeutral(CharacterData characterData) : base(characterData) { }
+
         public override bool ExecuteTurn()
         {
             Logger.Instance().Info("Executing NPC Turn", "CharacterNeutral.ExecuteTurn()");

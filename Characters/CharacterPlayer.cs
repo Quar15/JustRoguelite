@@ -11,6 +11,8 @@ namespace JustRoguelite.Characters
             SetCharacterType(CharacterType.PLAYER);
         }
 
+        public CharacterPlayer(CharacterData characterData) : base(characterData) { }
+
         public override bool ExecuteTurn()
         {
             Logger.Instance().Info("Executing Player Turn", "CharacterPlayer.ExecuteTurn()");

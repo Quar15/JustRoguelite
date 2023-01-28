@@ -11,6 +11,8 @@ namespace JustRoguelite.Characters
             SetCharacterType(CharacterType.ENEMY);
         }
 
+        public CharacterEnemy(CharacterData characterData) : base(characterData) { }
+
         public override bool ExecuteTurn()
         {
             Logger.Instance().Info("Executing Enemy Turn", "CharacterEnemy.ExecuteTurn()");
