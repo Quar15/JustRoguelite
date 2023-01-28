@@ -21,7 +21,7 @@ namespace JustRoguelite.Items
         public ItemType GetItemType() { return _itemType; }
         public void SetItemType(ItemType type) { _itemType = type; }
 
-        public Item(string name = "Item", string description = "", int value = 0) 
+        public Item(string name = "Item", string description = "", int value = 0, ItemType itemType = ItemType.USABLE) 
         {
             _nextID++;
             _ID = _nextID;
@@ -29,6 +29,7 @@ namespace JustRoguelite.Items
             this.name = name;
             this.description = description;
             this.value = value;
+            this._itemType = itemType;
         }
 
         public Item(ItemData itemData) 
