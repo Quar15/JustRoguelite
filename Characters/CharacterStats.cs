@@ -15,5 +15,13 @@
             this.physicalResistance = physicalResistance;
             this.magicalResistance = magicalResistance;
         }
+
+        public CharacterStats(CharacterStats characterStats)
+        {
+            this.maxHP = characterStats.maxHP;
+            this.speed = characterStats.speed;
+            this.physicalResistance = characterStats.physicalResistance;
+            this.magicalResistance = characterStats.magicalResistance;
+        }
     }
 }

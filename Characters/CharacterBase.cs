@@ -39,12 +39,8 @@ namespace JustRoguelite.Characters
             _characterBaseStats = characterBaseStats;
             _characterType = CharacterType.BASE;
 
-            _characterStats = new();
-            _characterStats.maxHP = _characterBaseStats.maxHP;
+            _characterStats = new(_characterBaseStats);
             _HP = (int)_characterBaseStats.maxHP;
-            _characterStats.speed = _characterBaseStats.speed;
-            _characterStats.physicalResistance = _characterBaseStats.physicalResistance;
-            _characterStats.magicalResistance = _characterBaseStats.magicalResistance;
             _EXP = 0;
 
             turnExecuted += TurnExecutedLog;
@@ -62,6 +58,8 @@ namespace JustRoguelite.Characters
 
             _characterBaseStats = characterData.characterBaseStats;
             _characterStats = characterData.characterBaseStats;
+            _HP = (int)_characterBaseStats.maxHP;
+            _EXP = 0;
 
             _characterType = characterData.characterType;
 
