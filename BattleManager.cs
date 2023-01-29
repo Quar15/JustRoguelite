@@ -12,15 +12,11 @@ namespace JustRoguelite
         private List<CharacterBase> _enemyCharacters = new();
 
         private QueueManager _queueManager;
-        // private UIManager _uiManager;
         private CharacterBase? _currentCharacter;
 
         private bool _canExecuteTurn = false;
 
-        // [SerializeField] private List<GameObject> battlePositions = new List<GameObject>();
         private const int NPLAYERPOSITIONS = 3;
-
-        // public void SetUIManager(UIManager uiManager) { _uiManager = uiManager; }
 
         public BattleManager(QueueManager queueManager)
         {
@@ -29,9 +25,31 @@ namespace JustRoguelite
 
         private void SetupCharacter(CharacterBase character, int index)
         {
-            // character.transform.position = battlePositions[index].transform.position;
             character.SetBattleID(index);
             character.turnExecuted += ExecuteTurn;
+        }
+
+        public void SetupBattle(CharactersList playerCharacters, CharactersList enemyCharacters) 
+        {
+            CharacterBase[] playerChar = playerCharacters.GetAll();
+            CharacterBase[] enemyChar = enemyCharacters.GetAll();
+            _playerCharacters.AddRange(playerChar);
+            _enemyCharacters.AddRange(enemyChar);
+
+            // Set character positions
+            for (int i = 0; i < playerChar.Length; i++)
+                SetupCharacter(playerChar[i], i);
+
+            for (int i = 0; i < enemyChar.Length; i++)
+                SetupCharacter(enemyChar[i], i + NPLAYERPOSITIONS);
+
+            CharactersList allCharacters = new();
+            allCharacters.Add(playerChar);
+            allCharacters.Add(enemyChar);
+
+            _queueManager.CreateQueue(allCharacters.GetAll());
+
+            EndTurn();
         }
 
         public void SetupBattle(List<CharacterBase> playerCharacters, List<CharacterBase> enemyCharacters)
@@ -49,7 +67,6 @@ namespace JustRoguelite
             _queueManager.CreateQueue(playerCharacters.Concat(enemyCharacters).ToList<CharacterBase>());
 
             EndTurn();
-            // _uiManager.StartBattle();
         }
 
         public bool ExecuteTurn(CharacterBase castingCharacter, CharacterBase targetCharacter, Skill skill)
@@ -93,7 +110,7 @@ namespace JustRoguelite
         public void EndTurn()
         {
             _canExecuteTurn = false;
-            Logger.Instance().Info("<b>Turn ended</b>", "BattleManager.EndTurn()");
+            Logger.Instance().Info("Turn ended", "BattleManager.EndTurn()");
             if (CheckIfBattleEnded())
             {
                 EndBattle();
@@ -106,7 +123,6 @@ namespace JustRoguelite
                 _queueManager.TryToGetNextInQueue(ref _currentCharacter);
             };
             // Update UI
-            // _uiManager.battleUIManager.EndTurn(_currentCharacter, _playerCharacters, _enemyCharacters);
             _canExecuteTurn = true;
 
             if (_currentCharacter != null && _currentCharacter.GetCharacterType() == CharacterType.ENEMY)

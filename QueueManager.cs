@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using JustRoguelite.Utility;
+﻿using JustRoguelite.Utility;
 using JustRoguelite.Characters;
 
 namespace JustRoguelite
@@ -16,7 +10,7 @@ namespace JustRoguelite
 
         public List<CharacterBase> GetQueue() { return _queue; }
 
-        private void PrintQueue()
+        public void PrintQueue()
         {
             int queueLength = _queue.Count;
             Logger.Instance().Info($"Queue [N: {queueLength}]", "QueueManager.PrintQueue()");
@@ -35,8 +29,7 @@ namespace JustRoguelite
                 {
                     Random rnd = new();
                     return rnd.Next(-1, 1);
-                }
-                    
+                }  
 
                 return b.GetSpeed().CompareTo(a.GetSpeed());
             });
@@ -45,6 +38,12 @@ namespace JustRoguelite
         }
 
         public void CreateQueue(List<CharacterBase> characters)
+        {
+            _queue.AddRange(characters);
+            SortQueue();
+        }
+
+        public void CreateQueue(CharacterBase[] characters)
         {
             _queue.AddRange(characters);
             SortQueue();
