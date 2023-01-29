@@ -16,6 +16,7 @@ namespace JustRoguelite.Characters
         public override bool ExecuteTurn()
         {
             Logger.Instance().Info("Executing Enemy Turn", "CharacterEnemy.ExecuteTurn()");
+            turnExecuted.Invoke(this, this, new());
             return true;
         }
     }
